@@ -13,12 +13,33 @@ Output
 
 Converts the input string with the specified delimiters into a map of key-value pairs.
 
-## Usage
+## API
 
 ```cpp
 namespace string2map
 {
     template<typename St, typename Tout>
     Tout parse(St& src);
+}
+```
+
+## Usage
+
+```cpp
+#include <string>
+#include <map>
+
+#include <gtest.h>
+
+using namespace std;
+
+TEST(string2map, ParseCheck)
+{
+    string     sampleStr{ "Host: hostname.com\r\nContent-Type: text\r\nContent-Length: 99\r\n\r\n"s };
+    map<string,string>  kvmap{};
+
+    kvmap= string2map::parse(sampleStr);
+
+    EXPECT_EQ(3, kvmap.size());
 }
 ```
