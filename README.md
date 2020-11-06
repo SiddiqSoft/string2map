@@ -9,7 +9,7 @@ Input
 - Value delimiter (default `CRLF`)
 
 Output
-- std::map<[w]string,[w]string> or std::unordered_map<[w]string,[w]string>
+- std::map<[w]string,[w]string>
 
 Converts the input string with the specified delimiters into a map of key-value pairs.
 
@@ -18,8 +18,8 @@ Converts the input string with the specified delimiters into a map of key-value 
 ```cpp
 namespace string2map
 {
-    template<typename St, typename Tout>
-    Tout parse(St& src);
+    template<typename St>
+    map<St,St> parse(St& src);
 }
 ```
 
@@ -36,9 +36,8 @@ using namespace std;
 TEST(string2map, ParseCheck)
 {
     string     sampleStr{ "Host: hostname.com\r\nContent-Type: text\r\nContent-Length: 99\r\n\r\n"s };
-    map<string,string>  kvmap{};
 
-    kvmap= string2map::parse(sampleStr);
+    auto kvmap= string2map::parse(sampleStr);
 
     EXPECT_EQ(3, kvmap.size());
 }
