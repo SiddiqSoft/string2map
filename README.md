@@ -37,7 +37,7 @@ TEST(string2map, ParseCheck)
 {
     string     sampleStr{ "Host: hostname.com\r\nContent-Type: text\r\nContent-Length: 99\r\n\r\n"s };
 
-    auto kvmap= string2map::parse(sampleStr);
+    auto kvmap= string2map::parse<string,map<string,string>(sampleStr);
 
     EXPECT_EQ(3, kvmap.size());
 }

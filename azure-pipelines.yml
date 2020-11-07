@@ -1,0 +1,103 @@
+trigger:
+  batch: true
+  branches:
+    include:
+    - main
+    - development
+    - bufix/*
+    - feature/*
+    - hotfix/*
+    - release/*
+  paths:
+    exclude:
+    - README.md
+
+pool:
+  name: Azure Pipelines
+  vmImage: 'windows-2019'
+  demands:
+  - msbuild
+  - visualstudio
+  - vstest
+
+variables:
+  buildPlatform: 'x64'
+  
+steps:
+- task: NuGetToolInstaller@1
+  displayName: 'Use NuGet 5.4.0'
+  inputs:
+    versionSpec: '5.4.0'
+    checkLatest: true
+
+- task: gittools.gitversion.gitversion-task.GitVersion@5
+  displayName: GitVersion
+
+- script: echo %Action%%BuildVersion%
+  displayName: 'Set build version'
+  env:
+    Action: '##vso[build.updatebuildnumber]'
+    BuildVersion: $(GitVersion.NugetVersionV2)
+
+- task: NuGetCommand@2
+  displayName: 'NuGet restore'
+  inputs:
+    vstsFeed: 'a0302836-2c67-4470-bcb5-10149e5447f9'
+  continueOnError: true
+
+- task: VSBuild@1
+  displayName: 'Build solution string2map.sln RELEASE'
+  inputs:
+    solution: 'string2map.sln'
+    platform: 'x64'
+    configuration: 'release'
+    maximumCpuCount: true
+    msbuildArchitecture: 'x64'
+
+- task: VSTest@2
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: '$(System.DefaultWorkingDirectory)\test\tests\Release\tests.exe --gtest_output=xml:$(System.DefaultWorkingDirectory)\TestResults'
+    searchFolder: '$(System.DefaultWorkingDirectory)'
+    resultsFolder: '$(System.DefaultWorkingDirectory)\TestResults'
+    runInParallel: true
+    codeCoverageEnabled: true
+    platform: 'x64'
+    configuration: 'Release'
+
+
+- task: CmdLine@2
+  inputs:
+    script: |
+      echo Running googltest
+      cd test
+      cd tests
+      cd Release
+      tests.exe --gtest_output=xml:..\..\..\TestResults\
+
+- task: PublishTestResults@2
+  displayName: 'Publish Release Test Results **/TEST-*.xml'
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: '**/tests.xml'
+    mergeTestResults: true
+    buildPlatform: 'x64'
+    buildConfiguration: 'release'
+  continueOnError: true
+
+- task: NuGetCommand@2
+  displayName: 'NuGet pack'
+  inputs:
+    command: pack
+    packagesToPack: 'build/string2map.nuspec;!build/string2map.symbols.nuspec'
+    buildProperties: 'VERSION=$(build.buildNumber)'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+
+- task: NuGetCommand@2
+  displayName: 'NuGet push'
+  inputs:
+    command: push
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg;build/*.nupkg;!build/*symbols.nupkg'
+    publishVstsFeed: 'a0302836-2c67-4470-bcb5-10149e5447f9'
+    allowPackageConflicts: true
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
