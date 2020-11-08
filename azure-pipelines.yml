@@ -70,8 +70,7 @@ steps:
   inputs:
     script: |
       echo Running googltest
-      cd test
-      cd tests
+      cd x64
       cd Release
       tests.exe --gtest_output=xml:..\..\..\TestResults\
 
