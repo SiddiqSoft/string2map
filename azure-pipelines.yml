@@ -57,7 +57,7 @@ steps:
 - task: CmdLine@2
   inputs:
     script: |
-      echo Running googltest
+      echo Running googletest
       cd x64
       cd Release
       tests.exe --gtest_output=xml:..\..\TestResults\
@@ -66,7 +66,7 @@ steps:
   displayName: 'Publish Release Test Results **/TEST-*.xml'
   inputs:
     testResultsFormat: 'JUnit'
-    testResultsFiles: '**/tests.xml'
+    testResultsFiles: '**/TestResults/tests.xml'
     mergeTestResults: true
     buildPlatform: 'x64'
     buildConfiguration: 'release'
