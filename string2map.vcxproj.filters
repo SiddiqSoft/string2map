@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="build">
+      <UniqueIdentifier>{97960b2b-0b1a-4f82-b8d1-e846a59d04f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{4bc0afe4-4aef-4be6-96ad-864294dfa247}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="build\string2map.nuspec">
+      <Filter>build</Filter>
+    </None>
+    <None Include="build\string2map.symbols.nuspec">
+      <Filter>build</Filter>
+    </None>
+    <None Include="build\string2map.symbols.targets">
+      <Filter>build</Filter>
+    </None>
+    <None Include="build\string2map.targets">
+      <Filter>build</Filter>
+    </None>
+    <None Include=".clang-format" />
+    <None Include=".clang-tidy" />
+    <None Include="azure-pipelines.yml" />
+    <None Include="LICENSE" />
+    <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\string2map.hpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
