@@ -54,3 +54,9 @@ void Test()
     EXPECT_EQ(3, kvmap.size());
 }
 ```
+
+<small align="right">
+
+&copy; 2020 Siddiq Software LLC. All rights reserved. Refer to [LICENSE](LICENSE).
+
+</small>
