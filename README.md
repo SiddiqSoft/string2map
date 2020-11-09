@@ -1,27 +1,33 @@
 # string2map
-Parse std::string to std::map
+
+Simple C++17 library to aid in the parsing of HTTP headers into a STL map-type container.
+
 
 ## Objective
 
-Input
+Convert the input string with the specified delimiters into a map of key-value pairs with the given input:
 - std::[w]string
-- Key delimiter (default `=`)
-- Value delimiter (default `CRLF`)
+- Key delimiter (example: `: `, `:`, `=`, `= `)
+- Value delimiter (end of the key-value pair element, example: CRLF)
+- Destination output type for key/value: `string` or `wstring`.
+- Destination container type: `map`, `multimap`, `unordered_map`.
 
-Output
-- std::map<[w]string,[w]string>
-
-Converts the input string with the specified delimiters into a map of key-value pairs.
 
 ## API
 
 ```cpp
 namespace string2map
 {
-    template<typename St>
-    map<St,St> parse(St& src);
+	template <typename T, typename D = T, typename R = std::map<D, D>>
+	R parse(T& src, const T& keyDelimiter, const T& valueDelimiter) noexcept(false)
 }
 ```
+
+typename | Type      | Comment
+---------|-----------|--------------
+`T`      | `string` or `wstring`  | Type of the source string
+`D`      | `string` or `wstring`  | Type of the destination string (used in the container)
+`R`      | `map`, `unordered_map`, `multimap` | Generally type is container<D,D>
 
 ## Usage
 
@@ -29,16 +35,28 @@ namespace string2map
 #include <string>
 #include <map>
 
-#include <gtest.h>
+#include "string2map.hpp"
 
-using namespace std;
-
-TEST(string2map, ParseCheck)
+void Test()
 {
-    string     sampleStr{ "Host: hostname.com\r\nContent-Type: text\r\nContent-Length: 99\r\n\r\n"s };
+    auto sampleStr{ "Host: duplicate\r\n"
+                    "Host: hostname.com\r\n"
+                    "Content-Type: text\r\n"
+                    "Content-Length: 99\r\n\r\n"s };
 
-    auto kvmap= string2map::parse<string,map<string,string>(sampleStr);
+    auto kvmap= siddiqsoftware::string2map::parse<string,  // input string
+                                                  wstring, // transform to wstring
+                                                  map<wstring,wstring> // destination container
+                                                 >(sampleStr);
 
+    // We expect only 3 items even though there is a duplicate key in the source string.
+    // The std::map container ensures unique keys.
     EXPECT_EQ(3, kvmap.size());
 }
 ```
+
+<small align="right">
+
+&copy; 2020 Siddiq Software LLC. All rights reserved. Refer to [LICENSE](LICENSE).
+
+</small>

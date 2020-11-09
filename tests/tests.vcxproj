@@ -36,11 +36,6 @@
     <ClCompile Include="test.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\string2map.vcxproj">
-      <Project>{af45c0f6-815e-4374-9bca-9e00c6fc1881}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemDefinitionGroup />
