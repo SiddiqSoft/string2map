@@ -35,7 +35,7 @@ typename | Type      | Comment
 #include <string>
 #include <map>
 
-#include "string2map.hpp"
+#include "siddiqsoft/string2map.hpp"
 
 void Test()
 {
@@ -44,10 +44,10 @@ void Test()
                     "Content-Type: text\r\n"
                     "Content-Length: 99\r\n\r\n"s };
 
-    auto kvmap= siddiqsoftware::string2map::parse<string,  // input string
-                                                  wstring, // transform to wstring
-                                                  map<wstring,wstring> // destination container
-                                                 >(sampleStr);
+    auto kvmap= siddiqsoft::string2map::parse<string,  // input string
+                                              wstring, // transform to wstring
+                                              map<wstring,wstring> // destination container
+                                             >(sampleStr);
 
     // We expect only 3 items even though there is a duplicate key in the source string.
     // The std::map container ensures unique keys.

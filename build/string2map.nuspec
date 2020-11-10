@@ -17,7 +17,7 @@
 		<requireLicenseAcceptance>true</requireLicenseAcceptance>
 		<licenseUrl>https://github.com/siddiqsoftware/string2map/blob/master/LICENSE</licenseUrl>
 		<releaseNotes></releaseNotes>
-		<copyright>Copyright (c) 2020 Abdelkareem Siddiq</copyright>
+		<copyright>Copyright (c) 2020 Siddiq Software LLC, Abdelkareem Siddiq</copyright>
 		<!-- Dependencies -->
 		<dependencies>
 		</dependencies>
@@ -31,7 +31,7 @@
 	-->
 	<files>
 		<!-- includes -->
-		<file src="..\src\*.hpp" target="build\native\include\siddiqsoftware\" />
+		<file src="..\src\*.hpp" target="build\native\include\siddiqsoft\" />
 
 		<!-- MSBuild .targets files -->
 		<file src="string2map.targets" target="build\native" />
