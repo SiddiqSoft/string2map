@@ -7,7 +7,7 @@
 	
 	BSD 3-Clause License
 	
-	Copyright (c) 2003-2020, Abdelkareem Siddiq
+	Copyright (c) 2003-2020, Abdelkareem Siddiq, Siddiq Software LLC.
 	All rights reserved.
 	
 	Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,7 @@
 #include <exception>
 #include <codecvt>
 
-namespace siddiqsoftware::string2map
+namespace siddiqsoft::string2map
 {
 	/// @brief Given a string which contains a key-value pair, extract them into a map of the same type.
 	/// @tparam T Must be either std::string or std::wstring or std::u8string
@@ -115,4 +115,4 @@ namespace siddiqsoftware::string2map
 
 		throw exception("parse() src must be string or wstring");
 	}
-} // namespace siddiqsoftware::string2map
+} // namespace siddiqsoft::string2map
