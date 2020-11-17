@@ -1,0 +1,9 @@
+{
+    "name": "string2map",
+    "version-string": "1.1.0",
+    "description": "Header only C++17 library to parse a string containing delimited key-value pairs into a map container including the feature to convert from std::string to std::wstring and vice-versa.",
+    "homepage": "https://github.com/siddiqsoft/string2map",
+    "license": "BSD 3-Clause",
+    "dependencies": [ ],
+    "dev-dependencies": [ ]
+}
