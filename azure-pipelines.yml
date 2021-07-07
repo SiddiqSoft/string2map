@@ -25,9 +25,9 @@ variables:
   
 steps:
 - task: NuGetToolInstaller@1
-  displayName: 'Use NuGet 5.4.0'
+  displayName: 'Use NuGet 5.10.0'
   inputs:
-    versionSpec: '5.4.0'
+    versionSpec: '5.10.0'
     checkLatest: true
 
 - task: gittools.gitversion.gitversion-task.GitVersion@5
@@ -42,7 +42,10 @@ steps:
 - task: NuGetCommand@2
   displayName: 'NuGet restore'
   inputs:
-    vstsFeed: 'a0302836-2c67-4470-bcb5-10149e5447f9'
+    command: 'restore'
+    restoreSolution: '**/*.sln'
+    feedsToUse: 'select'
+    vstsFeed: 'ec2759e0-0587-4306-8a8d-8695f15e2336'
   continueOnError: true
 
 - task: VSBuild@1
@@ -50,7 +53,7 @@ steps:
   inputs:
     solution: 'string2map.sln'
     platform: 'x64'
-    configuration: 'release'
+    configuration: 'Release'
     maximumCpuCount: true
     msbuildArchitecture: 'x64'
 
@@ -69,22 +72,24 @@ steps:
     testResultsFiles: '**/TestResults/tests.xml'
     mergeTestResults: true
     buildPlatform: 'x64'
-    buildConfiguration: 'release'
+    buildConfiguration: 'Release'
   continueOnError: true
 
 - task: NuGetCommand@2
   displayName: 'NuGet pack'
   inputs:
-    command: pack
+    command: 'pack'
     packagesToPack: 'build/string2map.nuspec;!build/string2map.symbols.nuspec'
+    versioningScheme: 'off'
     buildProperties: 'VERSION=$(build.buildNumber)'
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
 - task: NuGetCommand@2
   displayName: 'NuGet push'
   inputs:
-    command: push
+    command: 'push'
     packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg;build/*.nupkg;!build/*symbols.nupkg'
-    publishVstsFeed: 'a0302836-2c67-4470-bcb5-10149e5447f9'
+    nuGetFeedType: 'internal'
+    publishVstsFeed: 'ec2759e0-0587-4306-8a8d-8695f15e2336'
     allowPackageConflicts: true
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
