@@ -13,8 +13,7 @@ trigger:
     - README.md
 
 pool:
-  name: Azure Pipelines
-  vmImage: 'windows-2019'
+  name: Default
   demands:
   - msbuild
   - visualstudio
@@ -30,8 +29,9 @@ steps:
     versionSpec: '5.10.0'
     checkLatest: true
 
-- task: gittools.gitversion.gitversion-task.GitVersion@5
-  displayName: GitVersion
+- task: GitVersion@5
+  inputs:
+    runtime: 'core'
 
 - script: echo %Action%%BuildVersion%
   displayName: 'Set build version'
@@ -82,7 +82,7 @@ steps:
     packagesToPack: 'build/string2map.nuspec;!build/string2map.symbols.nuspec'
     versioningScheme: 'off'
     buildProperties: 'VERSION=$(build.buildNumber)'
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
 
 - task: NuGetCommand@2
   displayName: 'NuGet push'
@@ -92,4 +92,4 @@ steps:
     nuGetFeedType: 'internal'
     publishVstsFeed: 'ec2759e0-0587-4306-8a8d-8695f15e2336'
     allowPackageConflicts: true
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
