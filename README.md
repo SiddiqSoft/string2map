@@ -1,6 +1,7 @@
 # string2map
 
 [![CodeQL](https://github.com/SiddiqSoft/string2map/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/SiddiqSoft/string2map/actions/workflows/codeql-analysis.yml)
+[![Build Status](https://dev.azure.com/siddiqsoft/siddiqsoft/_apis/build/status/SiddiqSoft.string2map?branchName=main)](https://dev.azure.com/siddiqsoft/siddiqsoft/_build/latest?definitionId=3&branchName=main)
 
 Simple C++17 library to aid in the parsing of HTTP headers into a STL map-type container.
 
@@ -33,7 +34,7 @@ typename | Type      | Comment
 
 ## Usage
 
-Get it from [nuget](https://www.nuget.org/packages/string2map/)
+Get it from [nuget](https://www.nuget.org/packages/string2map/) or you can submodule it.
 
 ```cpp
 #include <string>
