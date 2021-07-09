@@ -1,5 +1,7 @@
 # string2map
 
+[![CodeQL](https://github.com/SiddiqSoft/string2map/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/SiddiqSoft/string2map/actions/workflows/codeql-analysis.yml)
+
 Simple C++17 library to aid in the parsing of HTTP headers into a STL map-type container.
 
 

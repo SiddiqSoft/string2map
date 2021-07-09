@@ -10,14 +10,14 @@
 		<!-- required: -->
 		<id>string2map</id>
 		<version>$VERSION$</version>
-		<authors>Abdulkareem Siddiq</authors>
+		<authors>SiddiqSoft</authors>
 		<description>Parse of key-value pair from string</description>
 		<tags>native nativepackage cpp</tags>
-		<projectUrl>https://github.com/siddiqsoftware/string2map</projectUrl>
+		<projectUrl>https://github.com/SiddiqSoft/string2map</projectUrl>
 		<requireLicenseAcceptance>true</requireLicenseAcceptance>
-		<licenseUrl>https://github.com/siddiqsoftware/string2map/blob/master/LICENSE</licenseUrl>
+		<license type="expression">BSD-3-Clause</license>
 		<releaseNotes></releaseNotes>
-		<copyright>Copyright (c) 2020 Siddiq Software LLC, Abdelkareem Siddiq</copyright>
+		<copyright>Copyright (c) 2020 Siddiq Software LLC</copyright>
 		<!-- Dependencies -->
 		<dependencies>
 		</dependencies>
