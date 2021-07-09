@@ -29,11 +29,6 @@ steps:
     versionSpec: '5.10.0'
     checkLatest: true
 
-- task: NuGetAuthenticate@0
-  inputs:
-    nuGetServiceConnections: 'sqs-nuget'
-    forceReinstallCredentialProvider: true
-
 - task: GitVersion@5
   inputs:
     runtime: 'core'
