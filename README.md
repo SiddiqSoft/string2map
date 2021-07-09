@@ -33,6 +33,8 @@ typename | Type      | Comment
 
 ## Usage
 
+Get it from [nuget](https://www.nuget.org/packages/string2map/)
+
 ```cpp
 #include <string>
 #include <map>
