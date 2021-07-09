@@ -29,6 +29,11 @@ steps:
     versionSpec: '5.10.0'
     checkLatest: true
 
+- task: NuGetAuthenticate@0
+  inputs:
+    nuGetServiceConnections: 'sqs-nuget'
+    forceReinstallCredentialProvider: true
+
 - task: GitVersion@5
   inputs:
     runtime: 'core'
@@ -89,7 +94,6 @@ steps:
   inputs:
     command: 'push'
     packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg;build/*.nupkg;!build/*symbols.nupkg'
-    nuGetFeedType: 'internal'
-    publishVstsFeed: 'ec2759e0-0587-4306-8a8d-8695f15e2336'
-    allowPackageConflicts: true
+    nuGetFeedType: 'external'
+    publishFeedCredentials: 'sqs-nuget'
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
