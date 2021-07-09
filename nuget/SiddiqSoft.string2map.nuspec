@@ -8,16 +8,21 @@
 	-->
 	<metadata>
 		<!-- required: -->
-		<id>string2map.symbols</id>
+		<id>SiddiqSoft.string2map</id>
 		<version>$VERSION$</version>
-		<authors>Abdulkareem Siddiq</authors>
+		<authors>SiddiqSoft</authors>
 		<description>Parse of key-value pair from string</description>
-		<tags>native nativepackage cpp</tags>
-		<projectUrl>https://github.com/siddiqsoftware/string2map</projectUrl>
+		<tags>parser HTTP headers native nativepackage cpp</tags>
+		<projectUrl>https://github.com/SiddiqSoft/string2map</projectUrl>
 		<requireLicenseAcceptance>true</requireLicenseAcceptance>
-		<licenseUrl>https://github.com/siddiqsoftware/string2map/blob/master/LICENSE</licenseUrl>
+		<license type="expression">BSD-3-Clause</license>
+    <icon>docs\Siddiq-Software-Avatar.png</icon>
+    <readme>docs\README.md</readme>
 		<releaseNotes></releaseNotes>
-		<copyright>Copyright (c) 2020 Abdelkareem Siddiq</copyright>
+		<copyright>Copyright (c) 2020 Siddiq Software LLC</copyright>
+		<!-- Dependencies -->
+		<dependencies>
+		</dependencies>
 	</metadata>
 
 	<!--
@@ -27,12 +32,12 @@
 		https://docs.microsoft.com/en-us/nuget/create-packages/creating-a-package#from-a-convention-based-working-directory
 	-->
 	<files>
-		<!--
-    <file src="..\output\Debug\string2map.pdb" target="build\native\lib\Debug" />
-    <file src="..\output\Release\string2map.pdb" target="build\native\lib\Release" />
-    -->
-
+		<!-- includes -->
+		<file src="..\src\*.hpp" target="build\native\include\siddiqsoft\" />
+    <file src="Siddiq-Software-Avatar.png" target="docs\" />
+    <file src="..\README.md" target="docs\" />
+    
 		<!-- MSBuild .targets files -->
-		<file src="string2map.symbols.targets" target="build\native" />
+		<file src="SiddiqSoft.string2map.targets" target="build\native" />
 	</files>
 </package>

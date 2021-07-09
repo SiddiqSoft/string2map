@@ -5,12 +5,10 @@ VisualStudioVersion = 16.0.30626.31
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tests", "tests\tests.vcxproj", "{9A54A19F-7A10-4D4A-B973-C69137707B8A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{7FEEAA11-B82D-44ED-8A12-1A104FF131E3}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget", "nuget", "{7FEEAA11-B82D-44ED-8A12-1A104FF131E3}"
 	ProjectSection(SolutionItems) = preProject
-		build\string2map.nuspec = build\string2map.nuspec
-		build\string2map.symbols.nuspec = build\string2map.symbols.nuspec
-		build\string2map.symbols.targets = build\string2map.symbols.targets
-		build\string2map.targets = build\string2map.targets
+		nuget\SiddiqSoft.string2map.nuspec = nuget\SiddiqSoft.string2map.nuspec
+		nuget\SiddiqSoft.string2map.targets = nuget\SiddiqSoft.string2map.targets
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{DE85D9B2-22E3-458B-88DA-C4FB66CFC7B3}"
