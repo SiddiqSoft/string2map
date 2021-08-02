@@ -1,5 +1,5 @@
 /*
-	String to Map Parse Helpers
+	String to Map and String to Vector Parse Helpers
 
 	Version 1.0.0
 
@@ -53,7 +53,7 @@ namespace siddiqsoft::string2map
 	/// @param valueDelimiter The "line terminator" delimiter which defines the value. Example: "\r\n".
 	/// @return map of key-value elements of given type
 	template <typename T, typename D = T, typename R = std::map<D, D>>
-	R parse(T& src, const T& keyDelimiter, const T& valueDelimiter) noexcept(false)
+	static R parse(T& src, const T& keyDelimiter, const T& valueDelimiter) noexcept(false)
 	{
 		using namespace std;
 
@@ -116,3 +116,34 @@ namespace siddiqsoft::string2map
 		throw exception("parse() src must be string or wstring");
 	}
 } // namespace siddiqsoft::string2map
+
+
+namespace siddiqsoft::string2vector
+{
+	/// @brief Splits a given string yielding a vector of substrings
+	/// @tparam T std::string or std::wstring
+	/// @param str The source string
+	/// @param delimiters The delimiters
+	/// @return A vector of type T
+	template <class T> static std::vector<T> parse(const T& str, const T& delimiters)
+	{
+		std::vector<T> tokens;
+
+		// Skip delimiters at beginning.
+		auto lastPos = str.find_first_not_of(delimiters, 0);
+		// Find first "non-delimiter".
+		auto pos = str.find_first_of(delimiters, lastPos);
+
+		while ((T::npos != pos) || (T::npos != lastPos))
+		{
+			// Found a token, add it to the std::vector.
+			tokens.push_back(str.substr(lastPos, pos - lastPos));
+			// Skip delimiters.  Note the "not_of"
+			lastPos = str.find_first_not_of(delimiters, pos);
+			// Find next "non-delimiter"
+			pos = str.find_first_of(delimiters, lastPos);
+		}
+
+		return tokens;
+	}
+} // namespace siddiqsoft::string2vector

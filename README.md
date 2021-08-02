@@ -1,4 +1,4 @@
-# string2map
+# string2map and string2vector
 
 [![CodeQL](https://github.com/SiddiqSoft/string2map/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/SiddiqSoft/string2map/actions/workflows/codeql-analysis.yml)
 [![Build Status](https://dev.azure.com/siddiqsoft/siddiqsoft/_apis/build/status/SiddiqSoft.string2map?branchName=main)](https://dev.azure.com/siddiqsoft/siddiqsoft/_build/latest?definitionId=3&branchName=main)
@@ -23,10 +23,10 @@ Convert the input string with the specified delimiters into a map of key-value p
 ## API
 
 ```cpp
-namespace string2map
+namespace siddiqsoft::string2map
 {
-	template <typename T, typename D = T, typename R = std::map<D, D>>
-	R parse(T& src, const T& keyDelimiter, const T& valueDelimiter) noexcept(false)
+    template <typename T, typename D = T, typename R = std::map<D, D>>
+    R parse(T& src, const T& keyDelimiter, const T& valueDelimiter) noexcept(false)
 }
 ```
 
@@ -35,6 +35,20 @@ typename | Type      | Comment
 `T`      | `string` or `wstring`  | Type of the source string
 `D`      | `string` or `wstring`  | Type of the destination string (used in the container)
 `R`      | `map`, `unordered_map`, `multimap` | Generally type is container<D,D>
+
+
+```cpp
+namespace siddiqsoft::string2vector
+{
+    template <typename T>
+    std::vector<T> parse(const T& src, const T& keyDelimiter)
+}
+```
+
+typename | Type      | Comment
+---------|-----------|--------------
+`T`      | `string` or `wstring`  | Type of the source string
+
 
 ## Usage
 
@@ -46,12 +60,12 @@ Get it from [nuget](https://www.nuget.org/packages/string2map/) or you can submo
 
 #include "siddiqsoft/string2map.hpp"
 
-void Test()
+TEST(parse, Test_string2map)
 {
-    auto sampleStr{ "Host: duplicate\r\n"
+    std::string sampleStr{ "Host: duplicate\r\n"
                     "Host: hostname.com\r\n"
                     "Content-Type: text\r\n"
-                    "Content-Length: 99\r\n\r\n"s };
+                    "Content-Length: 99\r\n\r\n" };
 
     auto kvmap= siddiqsoft::string2map::parse<string,  // input string
                                               wstring, // transform to wstring
@@ -62,6 +76,17 @@ void Test()
     // The std::map container ensures unique keys.
     EXPECT_EQ(3, kvmap.size());
 }
+
+
+TEST(parse, Test_string2vector)
+{
+    std::string sampleStr{ "/a/b/c/d" };
+
+    auto kv= siddiqsoft::string2vector::parse<string>(sampleStr);
+
+    EXPECT_EQ(4, kv.size());
+}
+
 ```
 
 <small align="right">

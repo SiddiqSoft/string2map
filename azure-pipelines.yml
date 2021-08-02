@@ -4,9 +4,6 @@ trigger:
     include:
     - main
     - development
-    - bufix/*
-    - feature/*
-    - hotfix/*
     - release/*
   paths:
     exclude:
