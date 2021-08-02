@@ -14,6 +14,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{DE85D9B2-22E3-458B-88DA-C4FB66CFC7B3}"
 	ProjectSection(SolutionItems) = preProject
 		src\string2map.hpp = src\string2map.hpp
+		src\string2vector.hpp = src\string2vector.hpp
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{36D756C8-8A1D-4EAC-9E80-0F548CC571D2}"

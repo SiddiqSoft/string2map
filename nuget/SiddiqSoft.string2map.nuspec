@@ -12,7 +12,7 @@
 		<version>$VERSION$</version>
 		<authors>SiddiqSoft</authors>
 		<description>Parse of key-value pair from string</description>
-		<tags>parser HTTP headers native nativepackage cpp</tags>
+		<tags>parser tokenize cpp17 HTTP headers native nativepackage cpp</tags>
 		<projectUrl>https://github.com/SiddiqSoft/string2map</projectUrl>
 		<requireLicenseAcceptance>true</requireLicenseAcceptance>
 		<license type="expression">BSD-3-Clause</license>

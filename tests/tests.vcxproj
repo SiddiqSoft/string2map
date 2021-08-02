@@ -33,7 +33,8 @@
     <EnableClangTidyCodeAnalysis>true</EnableClangTidyCodeAnalysis>
   </PropertyGroup>
   <ItemGroup>
-    <ClCompile Include="test.cpp" />
+    <ClCompile Include="test_string2map.cpp" />
+    <ClCompile Include="test_string2vector.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
