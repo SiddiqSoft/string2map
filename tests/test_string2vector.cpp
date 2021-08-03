@@ -43,4 +43,16 @@ namespace siddiqsoft::string2vector
 		auto kv = siddiqsoft::string2vector::parse<std::string>(sampleStr, ": "s);
 		EXPECT_EQ(6, kv.size());
 	}
+
+
+	// "http://<ServerName>/_vti_bin/ExcelRest.aspx/Docs/Documents/sampleWorkbook.xlsx/model/Charts('Chart%201')?Ranges('Sheet1!A1')=5.5"
+	TEST(string2vector, parse3)
+	{
+		using namespace std;
+
+		std::string sampleStr = "/_vti_bin/ExcelRest.aspx/Docs/Documents/sampleWorkbook.xlsx/model/Charts('Chart%201')";
+
+		auto kv = siddiqsoft::string2vector::parse<std::string>(sampleStr, "/"s);
+		EXPECT_EQ(7, kv.size());
+	}
 } // namespace siddiqsoft::string2vector
