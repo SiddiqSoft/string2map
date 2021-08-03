@@ -26,7 +26,7 @@ Convert the input string with the specified delimiters into a map of key-value p
 namespace siddiqsoft::string2map
 {
     template <typename T, typename D = T, typename R = std::map<D, D>>
-    R parse(T& src, const T& keyDelimiter, const T& valueDelimiter) noexcept(false)
+    R parse(T& src, const T& keyDelimiter, const T& valueDelimiter, const T& terminalDelimiter= T{}) noexcept(false)
 }
 ```
 

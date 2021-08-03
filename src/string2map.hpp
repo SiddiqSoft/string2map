@@ -51,9 +51,10 @@ namespace siddiqsoft::string2map
 	/// @param src Must be either std::string or std::wstring or std::u8string
 	/// @param keyDelimiter Delimiter for the key portion. Example: ": " or ":" or "="
 	/// @param valueDelimiter The "line terminator" delimiter which defines the value. Example: "\r\n".
+	/// @param terminalDelimiter The "end of frame" delimiter which defines the section. Stop processing if we encounter this value. Defaults to {}
 	/// @return map of key-value elements of given type
 	template <typename T, typename D = T, typename R = std::map<D, D>>
-	static R parse(T& src, const T& keyDelimiter, const T& valueDelimiter) noexcept(false)
+	static R parse(T& src, const T& keyDelimiter, const T& valueDelimiter, const T& terminalDelimiter = T {}) noexcept(false)
 	{
 		using namespace std;
 
@@ -62,16 +63,23 @@ namespace siddiqsoft::string2map
 		{
 			R resultMap {};
 
-			for (size_t keyStart = 0; keyStart < src.length();)
+			// Limit to the position of the terminalDelimiter.
+			size_t posTerminalDelimiter = !terminalDelimiter.empty() ? src.rfind(terminalDelimiter) : std::string::npos;
+
+			for (size_t keyStart = 0; keyStart < src.length() && keyStart < posTerminalDelimiter;)
 			{
 				if (auto keyEnd = src.find(keyDelimiter, keyStart); keyEnd != string::npos)
 				{
 					// Found a key
-					auto key = src.substr(keyStart, keyEnd - keyStart);
-					if (auto valueEnd = src.find(valueDelimiter, keyEnd); valueEnd != string::npos)
+					auto key      = src.substr(keyStart, keyEnd - keyStart);
+					auto valueEnd = src.find(valueDelimiter, keyEnd);
+
+					if (!key.empty())
 					{
 						// Found value (make sure we skip the key delimiter length)
-						auto value = src.substr(keyEnd + keyDelimiter.length(), valueEnd - (keyEnd + keyDelimiter.length()));
+						auto value = src.substr(keyEnd + keyDelimiter.length(),
+						                        valueEnd != std::string::npos ? valueEnd - (keyEnd + keyDelimiter.length())
+						                                                      : std::string::npos);
 
 						// Check if we need transformation
 						if constexpr (is_same_v<T, string> && is_same_v<D, wstring>)
@@ -94,8 +102,17 @@ namespace siddiqsoft::string2map
 							resultMap.insert({key, value});
 						}
 
-						// Advance to the next potential element.
-						keyStart = valueEnd + valueDelimiter.length();
+						// Check if we need to advance to next element
+						if (valueEnd != std::string::npos)
+						{
+							// Advance to the next potential element.
+							keyStart = valueEnd + valueDelimiter.length();
+						}
+						else
+						{
+							// Only the key was found and the final section is end of string
+							break;
+						}
 					}
 					else
 					{
