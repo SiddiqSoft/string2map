@@ -39,6 +39,7 @@
 #include <string>
 #include <vector>
 
+#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 
 namespace siddiqsoft::string2vector
 {

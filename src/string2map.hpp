@@ -40,6 +40,9 @@
 #include <map>
 #include <unordered_map>
 #include <exception>
+
+#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
+
 #include <codecvt>
 
 namespace siddiqsoft::string2map
@@ -56,10 +59,13 @@ namespace siddiqsoft::string2map
 	template <typename T, typename D = T, typename R = std::map<D, D>>
 	static R parse(T& src, const T& keyDelimiter, const T& valueDelimiter, const T& terminalDelimiter = T {}) noexcept(false)
 	{
-		using namespace std;
+		thread_local std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
 
-		if constexpr ((is_same_v<T, string> || is_same_v<T, wstring>)&&(is_same_v<D, string> || is_same_v<D, wstring>)&&(
-							  (is_same_v<R, map<D, D>> || is_same_v<R, multimap<D, D>> || is_same_v<R, unordered_map<D, D>>)))
+		if constexpr ((std::is_same_v<T, std::string> || std::is_same_v<T, std::wstring>)&&(
+							  std::is_same_v<D, std::string> ||
+							  std::is_same_v<D, std::wstring>)&&((std::is_same_v<R, std::map<D, D>> ||
+		                                                          std::is_same_v<R, std::multimap<D, D>> ||
+		                                                          std::is_same_v<R, std::unordered_map<D, D>>)))
 		{
 			R resultMap {};
 
@@ -68,7 +74,7 @@ namespace siddiqsoft::string2map
 
 			for (size_t keyStart = 0; keyStart < src.length() && keyStart < posTerminalDelimiter;)
 			{
-				if (auto keyEnd = src.find(keyDelimiter, keyStart); keyEnd != string::npos)
+				if (auto keyEnd = src.find(keyDelimiter, keyStart); keyEnd != std::string::npos)
 				{
 					// Found a key
 					auto key      = src.substr(keyStart, keyEnd - keyStart);
@@ -82,21 +88,17 @@ namespace siddiqsoft::string2map
 						                                                      : std::string::npos);
 
 						// Check if we need transformation
-						if constexpr (is_same_v<T, string> && is_same_v<D, wstring>)
+						if constexpr (std::is_same_v<T, std::string> && std::is_same_v<D, std::wstring>)
 						{
-							// Convert from string to wstring
-							thread_local std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 							// Insert element..
 							resultMap.insert({converter.from_bytes(key), converter.from_bytes(value)});
 						}
-						else if constexpr (is_same_v<T, wstring> && is_same_v<D, string>)
+						else if constexpr (std::is_same_v<T, std::wstring> && std::is_same_v<D, std::string>)
 						{
-							// Convert from wstring to string
-							thread_local std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 							// Insert element..
 							resultMap.insert({converter.to_bytes(key), converter.to_bytes(value)});
 						}
-						else if constexpr (is_same_v<T, D>)
+						else if constexpr (std::is_same_v<T, D>)
 						{
 							// Transformation not needed; insert element as-is.
 							resultMap.insert({key, value});
@@ -130,6 +132,6 @@ namespace siddiqsoft::string2map
 			return resultMap;
 		}
 
-		throw exception("parse() src must be string or wstring");
+		throw std::exception("parse() src must be string or wstring");
 	}
 } // namespace siddiqsoft::string2map

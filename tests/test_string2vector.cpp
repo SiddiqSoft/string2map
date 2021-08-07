@@ -1,3 +1,6 @@
+
+#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
+
 #include "gtest/gtest.h"
 #include "../src/string2vector.hpp"
 
