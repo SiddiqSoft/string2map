@@ -39,34 +39,33 @@
 #include <string>
 #include <vector>
 
-#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 
 namespace siddiqsoft::string2vector
 {
-	/// @brief Splits a given string yielding a vector of substrings
-	/// @tparam T std::string or std::wstring
-	/// @param str The source string
-	/// @param delimiters The delimiters
-	/// @return A vector of type T
-	template <class T> static std::vector<T> parse(const T& str, const T& delimiters)
-	{
-		std::vector<T> tokens;
+    /// @brief Splits a given string yielding a vector of substrings
+    /// @tparam T std::string or std::wstring
+    /// @param str The source string
+    /// @param delimiters The delimiters
+    /// @return A vector of type T
+    template <class T> static std::vector<T> parse(const T& str, const T& delimiters)
+    {
+        std::vector<T> tokens;
 
-		// Skip delimiters at beginning.
-		auto lastPos = str.find_first_not_of(delimiters, 0);
-		// Find first "non-delimiter".
-		auto pos = str.find_first_of(delimiters, lastPos);
+        // Skip delimiters at beginning.
+        auto lastPos = str.find_first_not_of(delimiters, 0);
+        // Find first "non-delimiter".
+        auto pos = str.find_first_of(delimiters, lastPos);
 
-		while ((T::npos != pos) || (T::npos != lastPos))
-		{
-			// Found a token, add it to the std::vector.
-			tokens.push_back(str.substr(lastPos, pos - lastPos));
-			// Skip delimiters.  Note the "not_of"
-			lastPos = str.find_first_not_of(delimiters, pos);
-			// Find next "non-delimiter"
-			pos = str.find_first_of(delimiters, lastPos);
-		}
+        while ((T::npos != pos) || (T::npos != lastPos))
+        {
+            // Found a token, add it to the std::vector.
+            tokens.push_back(str.substr(lastPos, pos - lastPos));
+            // Skip delimiters.  Note the "not_of"
+            lastPos = str.find_first_not_of(delimiters, pos);
+            // Find next "non-delimiter"
+            pos = str.find_first_of(delimiters, lastPos);
+        }
 
-		return tokens;
-	}
+        return tokens;
+    }
 } // namespace siddiqsoft::string2vector

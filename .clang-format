@@ -67,7 +67,7 @@ CompactNamespaces : false
 FixNamespaceComments : true
 Standard: Cpp11
 TabWidth: 4
-UseTab: AlignWithSpaces
+UseTab: Never #AlignWithSpaces
 SortIncludes: false
 SortUsingDeclarations: false
 IncludeBlocks : Preserve
