@@ -36,6 +36,7 @@
 	OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <stdexcept>
 #include <string>
 #include <map>
 #include <unordered_map>
@@ -59,9 +60,16 @@ namespace siddiqsoft::string2map
 
             // FROM char TO wchar_t
             std::vector<wchar_t> ns(ws.length() + 1);
+#if defined(WIN32)
             return 0 == mbstowcs_s(&convertedCount, ns.data(), ns.size(), ws.c_str(), ns.size())
                            ? std::wstring {ns.data(), convertedCount > 1 ? convertedCount - 1 : 0}
                            : std::wstring {};
+#else
+            convertedCount = std::mbstowcs(ns.data(), ws.c_str(), ns.size());
+            return convertedCount == static_cast<std::size_t>(-1)
+                           ? std::wstring {ns.data(), convertedCount > 1 ? convertedCount - 1 : 0}
+                           : std::wstring {};
+#endif
         }
         else if constexpr (std::is_same_v<CT, wchar_t>)
         {
@@ -69,9 +77,16 @@ namespace siddiqsoft::string2map
 
             // FROM wchar_t TO char
             std::vector<char> ns((ws.length() + 1) * 2); // overallocate for simplicity
+#if defined(WIN32)
             return 0 == wcstombs_s(&convertedCount, ns.data(), ns.size(), ws.c_str(), ns.size())
                            ? std::string {ns.data(), convertedCount > 1 ? convertedCount - 1 : 0}
                            : std::string {};
+#else
+            convertedCount = std::wcstombs(ns.data(), ws.c_str(), ns.size());
+            return convertedCount == static_cast<std::size_t>(-1)
+                           ? std::string {ns.data(), convertedCount > 1 ? convertedCount - 1 : 0}
+                           : std::string {};
+#endif
         }
     };
 
@@ -88,11 +103,10 @@ namespace siddiqsoft::string2map
     template <typename T, typename D = T, typename R = std::map<D, D>>
     static R parse(T& src, const T& keyDelimiter, const T& valueDelimiter, const T& terminalDelimiter = T {}) noexcept(false)
     {
-        if constexpr ((std::is_same_v<T, std::string> || std::is_same_v<T, std::wstring>)&&(
-                              std::is_same_v<D, std::string> ||
-                              std::is_same_v<D, std::wstring>)&&((std::is_same_v<R, std::map<D, D>> ||
-                                                                  std::is_same_v<R, std::multimap<D, D>> ||
-                                                                  std::is_same_v<R, std::unordered_map<D, D>>)))
+        if constexpr ((std::is_same_v<T, std::string> || std::is_same_v<T, std::wstring>) &&
+                      (std::is_same_v<D, std::string> || std::is_same_v<D, std::wstring>) &&
+                      ((std::is_same_v<R, std::map<D, D>> || std::is_same_v<R, std::multimap<D, D>> ||
+                        std::is_same_v<R, std::unordered_map<D, D>>)))
         {
             R resultMap {};
 
@@ -159,6 +173,6 @@ namespace siddiqsoft::string2map
             return resultMap;
         }
 
-        throw std::exception("parse() src must be string or wstring");
+        throw std::runtime_error("parse() src must be string or wstring");
     }
 } // namespace siddiqsoft::string2map

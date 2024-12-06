@@ -4,7 +4,7 @@
 
 #include "gtest/gtest.h"
 
-#include "../src/string2map.hpp"
+#include "../include/siddiqsoft/string2map.hpp"
 
 
 namespace siddiqsoft::string2map
@@ -87,7 +87,7 @@ namespace siddiqsoft::string2map
     {
         using namespace std;
 
-        std::string sampleStr = "Host: Duplicate\r\nHost: Hi\r\nAccept: Something\r\nContent-Length: 8\r\n\r\nmy: body"s;
+        std::string sampleStr {"Host: Duplicate\r\nHost: Hi\r\nAccept: Something\r\nContent-Length: 8\r\n\r\nmy: body"};
 
         // Note that we will stop at the \r\n\r\n which means the last section my: body is *NOT* going to be part of the decode!
         auto kvmap = siddiqsoft::string2map::parse<string, wstring, map<wstring, wstring>>(sampleStr, ": "s, "\r\n"s, "\r\n\r\n"s);
