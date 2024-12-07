@@ -36,6 +36,9 @@
 	OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <cwchar>
+#include <iostream>
+#include <stdexcept>
 #include <string>
 #include <map>
 #include <unordered_map>
@@ -44,37 +47,27 @@
 
 namespace siddiqsoft::string2map
 {
-    /// @brief Helper function that converts from char <-> wchar_t
-    /// @tparam T May be char or wchar_t
-    /// @param ws May be std::string or std::wstring
-    /// @return If source is std::string then the return is std::wstring and vice-versa.
-    template <typename CT> auto yinyang(const std::basic_string<CT>& ws)
+    std::wstring yinyang(const std::string& srcStr)
     {
-        // The return will include the NUL-terminator. In order to properly initialize the string, we must then subtract this character.
-        size_t convertedCount {};
+        std::mbstate_t       state = std::mbstate_t();
+        const char*          mbstr = srcStr.c_str();
+        std::size_t          len   = 1 + std::mbsrtowcs(nullptr, &mbstr, 0, &state);
+        std::vector<wchar_t> wstr(len);
 
-        if constexpr (std::is_same_v<CT, char>)
-        {
-            if (ws.empty()) return std::wstring {};
-
-            // FROM char TO wchar_t
-            std::vector<wchar_t> ns(ws.length() + 1);
-            return 0 == mbstowcs_s(&convertedCount, ns.data(), ns.size(), ws.c_str(), ns.size())
-                           ? std::wstring {ns.data(), convertedCount > 1 ? convertedCount - 1 : 0}
-                           : std::wstring {};
-        }
-        else if constexpr (std::is_same_v<CT, wchar_t>)
-        {
-            if (ws.empty()) return std::string {};
-
-            // FROM wchar_t TO char
-            std::vector<char> ns((ws.length() + 1) * 2); // overallocate for simplicity
-            return 0 == wcstombs_s(&convertedCount, ns.data(), ns.size(), ws.c_str(), ns.size())
-                           ? std::string {ns.data(), convertedCount > 1 ? convertedCount - 1 : 0}
-                           : std::string {};
-        }
+        std::mbsrtowcs(&wstr[0], &mbstr, wstr.size(), &state);
+        return {wstr.data(), wstr.size()};
     };
 
+    std::string yinyang(const std::wstring& srcStr)
+    {
+        std::mbstate_t    state = std::mbstate_t();
+        const wchar_t*    wstr  = srcStr.c_str();
+        std::size_t       len   = 1 + std::wcsrtombs(nullptr, &wstr, 0, &state);
+        std::vector<char> mbstr(len);
+
+        std::wcsrtombs(&mbstr[0], &wstr, mbstr.size(), &state);
+        return {mbstr.data(), mbstr.size()};
+    }
 
     /// @brief Given a string which contains a key-value pair, extract them into a map of the same type.
     /// @tparam T Must be either std::string or std::wstring or std::u8string
@@ -88,11 +81,10 @@ namespace siddiqsoft::string2map
     template <typename T, typename D = T, typename R = std::map<D, D>>
     static R parse(T& src, const T& keyDelimiter, const T& valueDelimiter, const T& terminalDelimiter = T {}) noexcept(false)
     {
-        if constexpr ((std::is_same_v<T, std::string> || std::is_same_v<T, std::wstring>)&&(
-                              std::is_same_v<D, std::string> ||
-                              std::is_same_v<D, std::wstring>)&&((std::is_same_v<R, std::map<D, D>> ||
-                                                                  std::is_same_v<R, std::multimap<D, D>> ||
-                                                                  std::is_same_v<R, std::unordered_map<D, D>>)))
+        if constexpr ((std::is_same_v<T, std::string> || std::is_same_v<T, std::wstring>) &&
+                      (std::is_same_v<D, std::string> || std::is_same_v<D, std::wstring>) &&
+                      ((std::is_same_v<R, std::map<D, D>> || std::is_same_v<R, std::multimap<D, D>> ||
+                        std::is_same_v<R, std::unordered_map<D, D>>)))
         {
             R resultMap {};
 
@@ -104,31 +96,35 @@ namespace siddiqsoft::string2map
                 if (auto keyEnd = src.find(keyDelimiter, keyStart); keyEnd != std::string::npos)
                 {
                     // Found a key
-                    auto key      = src.substr(keyStart, keyEnd - keyStart);
+                    T    key      = src.substr(keyStart, keyEnd - keyStart);
                     auto valueEnd = src.find(valueDelimiter, keyEnd);
 
                     if (!key.empty())
                     {
                         // Found value (make sure we skip the key delimiter length)
-                        auto value = src.substr(keyEnd + keyDelimiter.length(),
-                                                valueEnd != std::string::npos ? valueEnd - (keyEnd + keyDelimiter.length())
-                                                                              : std::string::npos);
+                        T value = src.substr(keyEnd + keyDelimiter.length(),
+                                             valueEnd != std::string::npos ? valueEnd - (keyEnd + keyDelimiter.length())
+                                                                           : std::string::npos);
 
                         // Check if we need transformation
                         if constexpr (std::is_same_v<T, std::string> && std::is_same_v<D, std::wstring>)
                         {
+                            D destKey {yinyang(key)};
+                            D destValue {yinyang(value)};
                             // Insert element.. from string to wstring
-                            resultMap.insert({yinyang(key), yinyang(value)});
+                            resultMap[destKey] = destValue;
                         }
                         else if constexpr (std::is_same_v<T, std::wstring> && std::is_same_v<D, std::string>)
                         {
+                            D destKey {yinyang(key)};
+                            D destValue {yinyang(value)};
                             // Insert element.. from wstring to string
-                            resultMap.insert({yinyang(key), yinyang(value)});
+                            resultMap.insert(std::pair {yinyang(key), yinyang(value)});
                         }
                         else if constexpr (std::is_same_v<T, D>)
                         {
                             // Transformation not needed; insert element as-is.
-                            resultMap.insert({key, value});
+                            resultMap.insert(std::pair {key, value});
                         }
 
                         // Check if we need to advance to next element
@@ -159,6 +155,6 @@ namespace siddiqsoft::string2map
             return resultMap;
         }
 
-        throw std::exception("parse() src must be string or wstring");
+        throw std::runtime_error("parse() src must be string or wstring");
     }
 } // namespace siddiqsoft::string2map

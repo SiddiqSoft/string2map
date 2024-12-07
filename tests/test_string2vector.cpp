@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "../src/string2vector.hpp"
+#include "../include/siddiqsoft/string2vector.hpp"
 
 
 namespace siddiqsoft::string2vector
