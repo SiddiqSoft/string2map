@@ -31,6 +31,10 @@ namespace siddiqsoft::string2map
         // Furthermore, the use of the map means we will not count duplicates.
         auto kvmap = siddiqsoft::string2map::parse<string, string, unordered_map<string, string>>(
                 sampleStr, ": "s, "\r\n"s, "\r\n\r\n"s);
+        for (const auto& items : kvmap)
+        {
+            std::cerr << items.first << ": " << items.second << std::endl;
+        }
         EXPECT_EQ(3, kvmap.size());
     }
 
@@ -91,6 +95,10 @@ namespace siddiqsoft::string2map
 
         // Note that we will stop at the \r\n\r\n which means the last section my: body is *NOT* going to be part of the decode!
         auto kvmap = siddiqsoft::string2map::parse<string, wstring, map<wstring, wstring>>(sampleStr, ": "s, "\r\n"s, "\r\n\r\n"s);
+        for (const auto& items : kvmap)
+        {
+            std::wcerr << items.first << L": " << items.second << std::endl;
+        }
         EXPECT_EQ(3, kvmap.size());
     }
 
