@@ -47,7 +47,7 @@
 
 namespace siddiqsoft::string2map
 {
-    std::wstring yinyang(const std::string& srcStr)
+    static auto yinyang(const std::string& srcStr) -> std::wstring
     {
         std::mbstate_t       state = std::mbstate_t();
         const char*          mbstr = srcStr.c_str();
@@ -58,7 +58,7 @@ namespace siddiqsoft::string2map
         return {wstr.data(), wstr.size()};
     };
 
-    std::string yinyang(const std::wstring& srcStr)
+    static auto yinyang(const std::wstring& srcStr) -> std::string
     {
         std::mbstate_t    state = std::mbstate_t();
         const wchar_t*    wstr  = srcStr.c_str();
