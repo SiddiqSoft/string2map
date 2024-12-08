@@ -113,7 +113,7 @@ namespace siddiqsoft::string2map
                         if constexpr (std::is_same_v<T, std::string> && std::is_same_v<D, std::wstring>)
                         {
                             // Insert element.. from string to wstring
-                            resultMap[internal_helpers::n2w(key)] = internal_helpers::n2w(destValue);
+                            resultMap[internal_helpers::n2w(key)] = internal_helpers::n2w(value);
                         }
                         else if constexpr (std::is_same_v<T, std::wstring> && std::is_same_v<D, std::string>)
                         {
