@@ -47,27 +47,30 @@
 
 namespace siddiqsoft::string2map
 {
-    static auto yinyang(const std::string& srcStr) -> std::wstring
-    {
-        std::mbstate_t       state = std::mbstate_t();
-        const char*          mbstr = srcStr.c_str();
-        std::size_t          len   = 1 + std::mbsrtowcs(nullptr, &mbstr, 0, &state);
-        std::vector<wchar_t> wstr(len);
+	namespace internal_helpers
+	{
+	    static auto n2w(const std::string& srcStr) -> std::wstring
+    	{
+	        std::mbstate_t       state = std::mbstate_t();
+    	    const char*          mbstr = srcStr.c_str();
+        	std::size_t          len   = 1 + std::mbsrtowcs(nullptr, &mbstr, 0, &state);
+        	std::vector<wchar_t> wstr(len);
 
-        std::mbsrtowcs(&wstr[0], &mbstr, wstr.size(), &state);
-        return {wstr.data(), wstr.size()};
-    };
+        	std::mbsrtowcs(&wstr[0], &mbstr, wstr.size(), &state);
+        	return {wstr.data(), wstr.size()};
+    	}
 
-    static auto yinyang(const std::wstring& srcStr) -> std::string
-    {
-        std::mbstate_t    state = std::mbstate_t();
-        const wchar_t*    wstr  = srcStr.c_str();
-        std::size_t       len   = 1 + std::wcsrtombs(nullptr, &wstr, 0, &state);
-        std::vector<char> mbstr(len);
+    	static auto w2n(const std::wstring& srcStr) -> std::string
+    	{
+        	std::mbstate_t    state = std::mbstate_t();
+	        const wchar_t*    wstr  = srcStr.c_str();
+    	    std::size_t       len   = 1 + std::wcsrtombs(nullptr, &wstr, 0, &state);
+        	std::vector<char> mbstr(len);
 
-        std::wcsrtombs(&mbstr[0], &wstr, mbstr.size(), &state);
-        return {mbstr.data(), mbstr.size()};
-    }
+	        std::wcsrtombs(&mbstr[0], &wstr, mbstr.size(), &state);
+    	    return {mbstr.data(), mbstr.size()};
+    	}
+	}
 
     /// @brief Given a string which contains a key-value pair, extract them into a map of the same type.
     /// @tparam T Must be either std::string or std::wstring or std::u8string
@@ -109,17 +112,13 @@ namespace siddiqsoft::string2map
                         // Check if we need transformation
                         if constexpr (std::is_same_v<T, std::string> && std::is_same_v<D, std::wstring>)
                         {
-                            D destKey {yinyang(key)};
-                            D destValue {yinyang(value)};
                             // Insert element.. from string to wstring
-                            resultMap[destKey] = destValue;
+                            resultMap[internal_helpers::n2w(key)] = internal_helpers::n2w(destValue);
                         }
                         else if constexpr (std::is_same_v<T, std::wstring> && std::is_same_v<D, std::string>)
                         {
-                            D destKey {yinyang(key)};
-                            D destValue {yinyang(value)};
                             // Insert element.. from wstring to string
-                            resultMap.insert(std::pair {yinyang(key), yinyang(value)});
+                            resultMap.insert(std::pair {internal_helpers::w2n(key), internal_helpers::w2n(value)});
                         }
                         else if constexpr (std::is_same_v<T, D>)
                         {
