@@ -47,30 +47,34 @@
 
 namespace siddiqsoft::string2map
 {
-	namespace internal_helpers
-	{
-	    static auto n2w(const std::string& srcStr) -> std::wstring
-    	{
-	        std::mbstate_t       state = std::mbstate_t();
-    	    const char*          mbstr = srcStr.c_str();
-        	std::size_t          len   = 1 + std::mbsrtowcs(nullptr, &mbstr, 0, &state);
-        	std::vector<wchar_t> wstr(len);
+    namespace internal_helpers
+    {
+        static auto n2w(const std::string& srcStr) -> std::wstring
+        {
+            std::mbstate_t       state = std::mbstate_t();
+            const char*          mbstr = srcStr.c_str();
+            std::size_t          len   = 1 + std::mbsrtowcs(nullptr, &mbstr, 0, &state);
+            std::vector<wchar_t> wstr(len);
 
-        	std::mbsrtowcs(&wstr[0], &mbstr, wstr.size(), &state);
-        	return {wstr.data(), wstr.size()};
-    	}
+            if (auto resultLen = std::mbsrtowcs(&wstr[0], &mbstr, wstr.size(), &state); resultLen != -1)
+                return {wstr.data(), resultLen};
+            // Failure
+            return {};
+        }
 
-    	static auto w2n(const std::wstring& srcStr) -> std::string
-    	{
-        	std::mbstate_t    state = std::mbstate_t();
-	        const wchar_t*    wstr  = srcStr.c_str();
-    	    std::size_t       len   = 1 + std::wcsrtombs(nullptr, &wstr, 0, &state);
-        	std::vector<char> mbstr(len);
+        static auto w2n(const std::wstring& srcStr) -> std::string
+        {
+            std::mbstate_t    state = std::mbstate_t();
+            const wchar_t*    wstr  = srcStr.c_str();
+            std::size_t       len   = 1 + std::wcsrtombs(nullptr, &wstr, 0, &state);
+            std::vector<char> mbstr(len);
 
-	        std::wcsrtombs(&mbstr[0], &wstr, mbstr.size(), &state);
-    	    return {mbstr.data(), mbstr.size()};
-    	}
-	}
+            if (auto resultLen = std::wcsrtombs(&mbstr[0], &wstr, mbstr.size(), &state); resultLen != -1)
+                return {mbstr.data(), resultLen};
+            // Failure
+            return {};
+        }
+    } // namespace internal_helpers
 
     /// @brief Given a string which contains a key-value pair, extract them into a map of the same type.
     /// @tparam T Must be either std::string or std::wstring or std::u8string
