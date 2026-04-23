@@ -36,10 +36,13 @@
 	OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#pragma once
+
 #include <cwchar>
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <vector>
 #include <map>
 #include <unordered_map>
 #include <exception>
@@ -51,12 +54,19 @@ namespace siddiqsoft::string2map
     {
         static auto n2w(const std::string& srcStr) -> std::wstring
         {
-            std::mbstate_t       state = std::mbstate_t();
-            const char*          mbstr = srcStr.c_str();
-            std::size_t          len   = 1 + std::mbsrtowcs(nullptr, &mbstr, 0, &state);
-            std::vector<wchar_t> wstr(len);
+            if (srcStr.empty()) return {};
 
-            if (auto resultLen = std::mbsrtowcs(&wstr[0], &mbstr, wstr.size(), &state); resultLen != -1)
+            std::mbstate_t state = std::mbstate_t();
+            const char*    mbstr = srcStr.c_str();
+            std::size_t    len   = std::mbsrtowcs(nullptr, &mbstr, 0, &state);
+
+            // If the length query itself fails, return empty.
+            if (len == static_cast<std::size_t>(-1)) return {};
+
+            std::vector<wchar_t> wstr(len + 1);
+
+            if (auto resultLen = std::mbsrtowcs(&wstr[0], &mbstr, wstr.size(), &state);
+                resultLen != static_cast<std::size_t>(-1))
                 return {wstr.data(), resultLen};
             // Failure
             return {};
@@ -64,12 +74,19 @@ namespace siddiqsoft::string2map
 
         static auto w2n(const std::wstring& srcStr) -> std::string
         {
-            std::mbstate_t    state = std::mbstate_t();
-            const wchar_t*    wstr  = srcStr.c_str();
-            std::size_t       len   = 1 + std::wcsrtombs(nullptr, &wstr, 0, &state);
-            std::vector<char> mbstr(len);
+            if (srcStr.empty()) return {};
 
-            if (auto resultLen = std::wcsrtombs(&mbstr[0], &wstr, mbstr.size(), &state); resultLen != -1)
+            std::mbstate_t state = std::mbstate_t();
+            const wchar_t* wstr = srcStr.c_str();
+            std::size_t    len  = std::wcsrtombs(nullptr, &wstr, 0, &state);
+
+            // If the length query itself fails, return empty.
+            if (len == static_cast<std::size_t>(-1)) return {};
+
+            std::vector<char> mbstr(len + 1);
+
+            if (auto resultLen = std::wcsrtombs(&mbstr[0], &wstr, mbstr.size(), &state);
+                resultLen != static_cast<std::size_t>(-1))
                 return {mbstr.data(), resultLen};
             // Failure
             return {};
@@ -86,7 +103,7 @@ namespace siddiqsoft::string2map
     /// @param terminalDelimiter The "end of frame" delimiter which defines the section. Stop processing if we encounter this value. Defaults to {}
     /// @return map of key-value elements of given type
     template <typename T, typename D = T, typename R = std::map<D, D>>
-    static R parse(T& src, const T& keyDelimiter, const T& valueDelimiter, const T& terminalDelimiter = T {}) noexcept(false)
+    static R parse(const T& src, const T& keyDelimiter, const T& valueDelimiter, const T& terminalDelimiter = T {}) noexcept(false)
     {
         if constexpr ((std::is_same_v<T, std::string> || std::is_same_v<T, std::wstring>) &&
                       (std::is_same_v<D, std::string> || std::is_same_v<D, std::wstring>) &&
@@ -95,29 +112,44 @@ namespace siddiqsoft::string2map
         {
             R resultMap {};
 
+            // Guard: empty source or empty delimiters yield no results.
+            if (src.empty() || keyDelimiter.empty() || valueDelimiter.empty()) return resultMap;
+
             // Limit to the position of the terminalDelimiter.
-            size_t posTerminalDelimiter = !terminalDelimiter.empty() ? src.rfind(terminalDelimiter) : std::string::npos;
+            size_t posTerminalDelimiter = !terminalDelimiter.empty() ? src.find(terminalDelimiter) : std::string::npos;
 
             for (size_t keyStart = 0; keyStart < src.length() && keyStart < posTerminalDelimiter;)
             {
-                if (auto keyEnd = src.find(keyDelimiter, keyStart); keyEnd != std::string::npos)
+                if (auto keyEnd = src.find(keyDelimiter, keyStart);
+                    keyEnd != std::string::npos && keyEnd < posTerminalDelimiter)
                 {
                     // Found a key
                     T    key      = src.substr(keyStart, keyEnd - keyStart);
-                    auto valueEnd = src.find(valueDelimiter, keyEnd);
+                    // Search for value delimiter, but only up to the terminal delimiter boundary.
+                    auto valueEnd = src.find(valueDelimiter, keyEnd + keyDelimiter.length());
+
+                    // Clamp valueEnd to the terminal delimiter boundary so we don't read past it.
+                    if (valueEnd != std::string::npos && posTerminalDelimiter != std::string::npos &&
+                        valueEnd >= posTerminalDelimiter)
+                    {
+                        valueEnd = std::string::npos;
+                    }
 
                     if (!key.empty())
                     {
                         // Found value (make sure we skip the key delimiter length)
                         T value = src.substr(keyEnd + keyDelimiter.length(),
                                              valueEnd != std::string::npos ? valueEnd - (keyEnd + keyDelimiter.length())
-                                                                           : std::string::npos);
+                                                                           : (posTerminalDelimiter != std::string::npos
+                                                                                      ? posTerminalDelimiter -
+                                                                                                (keyEnd + keyDelimiter.length())
+                                                                                      : std::string::npos));
 
                         // Check if we need transformation
                         if constexpr (std::is_same_v<T, std::string> && std::is_same_v<D, std::wstring>)
                         {
                             // Insert element.. from string to wstring
-                            resultMap[internal_helpers::n2w(key)] = internal_helpers::n2w(value);
+                            resultMap.insert(std::pair {internal_helpers::n2w(key), internal_helpers::n2w(value)});
                         }
                         else if constexpr (std::is_same_v<T, std::wstring> && std::is_same_v<D, std::string>)
                         {
@@ -138,19 +170,19 @@ namespace siddiqsoft::string2map
                         }
                         else
                         {
-                            // Only the key was found and the final section is end of string
+                            // Value extends to end of parseable region
                             break;
                         }
                     }
                     else
                     {
-                        // No value end was located! We must break out of the loop
+                        // Empty key; We must break out of the loop
                         break;
                     }
                 }
                 else
                 {
-                    // No key end was located; We must break out of the loop
+                    // No key end was located (or it's beyond the terminal delimiter); break
                     break;
                 }
             }
