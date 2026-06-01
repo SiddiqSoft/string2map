@@ -1,0 +1,78 @@
+# ============================================================================
+# Docker Compose Configuration for Gitea Actions Runner Testing
+# ============================================================================
+#
+# This Docker Compose file sets up a local Gitea instance with Actions
+# enabled and a runner for testing purposes.
+#
+# Usage:
+#   docker-compose up -d
+#   docker-compose logs -f
+#   docker-compose down
+#
+# Access:
+#   Gitea: http://localhost:3000
+#   Default credentials: gitea / gitea
+#
+# ============================================================================
+
+version: '3.8'
+
+services:
+  # ========================================================================
+  # Gitea Service
+  # ========================================================================
+  gitea:
+    image: gitea/gitea:latest
+    container_name: gitea
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+      - GITEA__database__DB_TYPE=sqlite3
+      - GITEA__database__PATH=/data/gitea/gitea.db
+      - GITEA__server__ROOT_URL=http://localhost:3000/
+      - GITEA__server__HTTP_PORT=3000
+      - GITEA__actions__ENABLED=true
+      - GITEA__actions__DEFAULT_ACTIONS_URL=https://github.com
+    restart: always
+    volumes:
+      - gitea_data:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "3000:3000"
+      - "222:22"
+    networks:
+      - gitea-network
+
+  # ========================================================================
+  # Gitea Actions Runner (Linux)
+  # ========================================================================
+  gitea-runner-linux:
+    image: gitea/act_runner:latest
+    container_name: gitea-runner-linux
+    environment:
+      - GITEA_INSTANCE_URL=http://gitea:3000
+      - GITEA_RUNNER_REGISTRATION_TOKEN=${GITEA_RUNNER_TOKEN:-}
+      - GITEA_RUNNER_NAME=gitea-runner-linux
+      - GITEA_RUNNER_LABELS=linux,ubuntu,x64
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - runner_data:/data
+    depends_on:
+      - gitea
+    networks:
+      - gitea-network
+    # Uncomment to use Docker-in-Docker
+    # privileged: true
+
+volumes:
+  gitea_data:
+    driver: local
+  runner_data:
+    driver: local
+
+networks:
+  gitea-network:
+    driver: bridge
