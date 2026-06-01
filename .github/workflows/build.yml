@@ -35,8 +35,7 @@ on:
       - release/*
     paths-ignore:
       - README.md
-      - .ci/**
-      - azure-pipelines.yml
+
   pull_request:
     branches:
       - main
