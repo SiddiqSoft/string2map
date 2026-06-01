@@ -7,8 +7,11 @@
 ![](https://img.shields.io/azure-devops/tests/siddiqsoft/siddiqsoft/2)
 ![](https://img.shields.io/azure-devops/coverage/siddiqsoft/siddiqsoft/2)
 
-Simple C++17 library to aid in the parsing of HTTP headers into a STL map-type container.
+Simple C++23 library to aid in the parsing of HTTP headers into a STL map-type container.
 
+> **Breaking change!**
+>
+> We're switching from minimum C++17 to C++23 as the build system mandate.
 
 ## Objective
 
