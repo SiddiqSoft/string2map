@@ -1,6 +1,5 @@
 # string2map and string2vector
 
-[![CodeQL](https://github.com/SiddiqSoft/string2map/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/SiddiqSoft/string2map/actions/workflows/codeql-analysis.yml)
 [![Build Status](https://dev.azure.com/siddiqsoft/siddiqsoft/_apis/build/status/SiddiqSoft.string2map?branchName=main)](https://dev.azure.com/siddiqsoft/siddiqsoft/_build/latest?definitionId=3&branchName=main)
 ![](https://img.shields.io/nuget/v/SiddiqSoft.string2map)
 ![](https://img.shields.io/github/v/tag/SiddiqSoft/string2map)
