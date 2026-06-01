@@ -58,19 +58,11 @@ if(${${PROJECT_NAME}_BUILD_TESTS})
     CPMAddPackage("gh:google/googletest#v1.17.0")
     target_sources( ${TESTPROJ}
                     PRIVATE
-                    ${PROJECT_SOURCE_DIR}/tests/basic.cpp
-                    ${PROJECT_SOURCE_DIR}/tests/test.cpp
-                    ${PROJECT_SOURCE_DIR}/tests/stress_tests.cpp
-                    ${PROJECT_SOURCE_DIR}/tests/query_tests.cpp)
+                    ${PROJECT_SOURCE_DIR}/tests/test_string2map.cpp
+                    ${PROJECT_SOURCE_DIR}/tests/test_string2vector.cpp)
     # Link dependencies..
     target_link_libraries(${TESTPROJ} PRIVATE
-            GTest::gtest_main
-            nlohmann_json::nlohmann_json
-            SplitUri::SplitUri
-            AzureCppUtils::AzureCppUtils
-            GenProcessInfo::GenProcessInfo
-            restcl::restcl
-)
+            GTest::gtest_main)
 
     include(GoogleTest)
     gtest_discover_tests(${TESTPROJ} XML_OUTPUT_DIR "${PROJECT_SOURCE_DIR}/tests/results")
