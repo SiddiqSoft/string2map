@@ -52,7 +52,7 @@ if(${${PROJECT_NAME}_BUILD_TESTS})
 
     # Our tests depend on this preprocessor definition during CI/test mode to enable
     # access to protected members.
-    target_compile_definitions(${TESTPROJ} PRIVATE cosmoscl_TESTING_MODE=1)
+    target_compile_definitions(${TESTPROJ} PRIVATE ${PROJECT_NAME}_TESTING_MODE=1)
 
     # Dependencies
     CPMAddPackage("gh:google/googletest#v1.17.0")
